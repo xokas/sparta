@@ -3,7 +3,6 @@ package com.sparta.message.builders;
 import java.util.Random;
 
 import com.sparta.message.objects.Sensor;
-import com.sparta.utils.Converters;
 import com.sparta.utils.Utils;
 
 public class SensorBuilder extends MessageBuilder<Sensor>{
