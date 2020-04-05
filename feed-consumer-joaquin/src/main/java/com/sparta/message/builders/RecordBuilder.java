@@ -15,7 +15,6 @@ public class RecordBuilder extends MessageBuilder<Record>{
 
 	@Override
 	public Record construct() {
-		SensorCollectionBuilder builder;
 		Long recordIndex;
 		Long timestamp;
 		String city;
@@ -27,14 +26,20 @@ public class RecordBuilder extends MessageBuilder<Record>{
 		timestamp = this.constructLong();
 		city = this.constructString();
 		numberBytesSensorData = this.constructInteger();
-		
-		builder = new SensorCollectionBuilder(this.getArray(), this.getPointer());
-		sensorsData = (List<Sensor>) builder.construct();
-		this.setPointer(builder.getPointer());
-		
+		sensorsData = this.constructSensorData();		
 		crc32SensorsData = this.constructLong();
 		
 		return new Record(recordIndex, timestamp, city, numberBytesSensorData, sensorsData, crc32SensorsData);
+	}
+
+	private List<Sensor> constructSensorData() {
+		List<Sensor> result;
+		
+		SensorCollectionBuilder builder = new SensorCollectionBuilder(this.getArray(), this.getPointer());
+		result =  builder.construct();
+		this.setPointer(builder.getPointer());
+		
+		return result;
 	}
 
 	public static Record constructTestData(Random ran) {

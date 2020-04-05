@@ -20,14 +20,19 @@ public class SensorCollectionBuilder extends MessageBuilder<List<Sensor>>{
 		Integer numberOfSensors;
 		
 		numberOfSensors = this.constructInteger();
-		result = new ArrayList<>(numberOfSensors);
+		result = this.constructListSensor(numberOfSensors);
+		
+		return result;
+	}
+
+	private List<Sensor> constructListSensor(Integer numberOfSensors) {
+		List<Sensor> result = new ArrayList<>(numberOfSensors);
 		for(int i = 0; i < numberOfSensors; i++) {
 			SensorBuilder sensorBuilder = new SensorBuilder(this.getArray(), this.getPointer());
 			Sensor sensor = sensorBuilder.construct();
 			this.setPointer(sensorBuilder.getPointer());
 			result.add(sensor);
 		}
-		
 		return result;
 	}
 
