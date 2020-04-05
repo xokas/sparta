@@ -2,8 +2,8 @@ package com.sparta.message.builders;
 
 public class IntegerBuilder extends MessageBuilder<Integer>{
 
-	public IntegerBuilder(byte[] array) {
-		super(array);
+	public IntegerBuilder(byte[] array, int pointer) {
+		super(array, pointer);
 	}
 	
 	@Override

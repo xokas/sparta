@@ -7,24 +7,21 @@ import com.sparta.message.objects.Sensor;
 
 public class SensorCollectionBuilder extends MessageBuilder<List<Sensor>>{
 
-	public SensorCollectionBuilder(byte[] array) {
-		super(array);	
+	public SensorCollectionBuilder(byte[] array, int pointer) {
+		super(array, pointer);	
 	}
 
 	@Override
 	public List<Sensor> construct() {
 		List<Sensor> result;
-		IntegerBuilder numberOfSensorsBuilder;
 		Integer numberOfSensors;
 		
-		numberOfSensorsBuilder = new IntegerBuilder(this.getArray());
-		numberOfSensors = numberOfSensorsBuilder.construct();
+		numberOfSensors = this.constructInteger();
 		result = new ArrayList<>(numberOfSensors);
-		this.setRemnant(numberOfSensorsBuilder.getRemnant());
 		for(int i = 0; i < numberOfSensors; i++) {
-			SensorBuilder sensorBuilder = new SensorBuilder(this.getRemnant());
+			SensorBuilder sensorBuilder = new SensorBuilder(this.getArray(), this.getPointer());
 			Sensor sensor = sensorBuilder.construct();
-			this.setRemnant(sensorBuilder.getRemnant());
+			this.setPointer(sensorBuilder.getPointer());
 			result.add(sensor);
 		}
 		

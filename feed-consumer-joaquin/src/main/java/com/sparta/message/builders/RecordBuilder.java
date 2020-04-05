@@ -7,14 +7,13 @@ import com.sparta.message.objects.Sensor;
 
 public class RecordBuilder extends MessageBuilder<Record>{
 
-	public RecordBuilder(byte[] array) {
-		super(array);
+	public RecordBuilder(byte[] array, int pointer) {
+		super(array, pointer);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Record construct() {
-		MessageBuilder<?> builder;
+		SensorCollectionBuilder builder;
 		Long recordIndex;
 		Long timestamp;
 		String city;
@@ -22,28 +21,18 @@ public class RecordBuilder extends MessageBuilder<Record>{
 		List<Sensor> sensorsData;
 		Long crc32SensorsData;
 		
-		builder = new LongBuilder(this.getArray());
-		recordIndex = (Long) builder.construct();
+		recordIndex = this.constructLong();
+		timestamp = this.constructLong();
+		city = this.constructString();
+		numberBytesSensorData = this.constructInteger();
 		
-		builder = new LongBuilder(builder.getRemnant());
-		timestamp = (Long) builder.construct();
-		
-		builder = new StringBuilder(builder.getRemnant());
-		city = (String) builder.construct();
-		
-		builder = new IntegerBuilder(builder.getRemnant());
-		numberBytesSensorData = (Integer) builder.construct();
-		
-		builder = new SensorCollectionBuilder(builder.getRemnant());
+		builder = new SensorCollectionBuilder(this.getArray(), this.getPointer());
 		sensorsData = (List<Sensor>) builder.construct();
+		this.setPointer(builder.getPointer());
 		
-		builder = new LongBuilder(builder.getRemnant());
-		crc32SensorsData = (Long) builder.construct();
-		
-		this.setRemnant(builder.getRemnant());
+		crc32SensorsData = this.constructLong();
 		
 		return new Record(recordIndex, timestamp, city, numberBytesSensorData, sensorsData, crc32SensorsData);
 	}
-
 	
 }

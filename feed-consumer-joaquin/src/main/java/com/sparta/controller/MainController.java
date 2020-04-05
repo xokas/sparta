@@ -39,7 +39,7 @@ public class MainController {
 	public int total(@PathVariable("provider") String provider) {
 		int result = -1;
 		
-		System.out.println("total: " + this.total);
+		//System.out.println("total: " + this.total);
 		result = (int) this.total;
 		
 		return result;

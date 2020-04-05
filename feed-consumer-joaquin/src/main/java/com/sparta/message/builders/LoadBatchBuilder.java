@@ -8,23 +8,20 @@ import com.sparta.message.objects.Record;
 public class LoadBatchBuilder extends MessageBuilder<List<Record>> {
 
 	public LoadBatchBuilder(byte[] array) {
-		super(array);
+		super(array, 0);
 	}
 
 	@Override
 	public List<Record> construct() {
 		List<Record> result;
-		LongBuilder numberOfRecordsBuilder;
 		Long numberOfRecords;
 		
-		numberOfRecordsBuilder = new LongBuilder(this.getArray());
-		numberOfRecords = numberOfRecordsBuilder.construct();
+		numberOfRecords = this.constructLong();
 		result = new ArrayList<>(numberOfRecords.intValue());
-		this.setRemnant(numberOfRecordsBuilder.getRemnant());
 		for(int i = 0; i < numberOfRecords; i++) {
-			RecordBuilder recordBuilder = new RecordBuilder(this.getRemnant());
-			Record sensor = recordBuilder.construct();
-			this.setRemnant(recordBuilder.getRemnant());
+			RecordBuilder builder = new RecordBuilder(this.getArray(), this.getPointer());
+			Record sensor = builder.construct();
+			this.setPointer(builder.getPointer());
 			result.add(sensor);
 		}
 		return result;

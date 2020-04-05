@@ -2,17 +2,17 @@ package com.sparta.message.builders;
 
 public class StringBuilder extends MessageBuilder<String>{
 		
-	public StringBuilder(byte[] array) {
-		super(array);
+	public StringBuilder(byte[] array, int pointer) {
+		super(array, pointer);
 	}
 	
 	@Override 
 	public String construct() {
-		IntegerBuilder sizeBuilder;
+		MessageBuilder<?> builder;
 		Integer size;
-		sizeBuilder = new IntegerBuilder(this.getArray());
-		size = sizeBuilder.construct();
-		this.setArray(sizeBuilder.getRemnant());
+		builder = new IntegerBuilder(this.getArray(), this.getPointer());
+		size = (Integer) builder.construct();
+		this.setPointer(builder.getPointer());
 		
 		return Converters.convertByteArrayToString(this.getData(size));
 	}

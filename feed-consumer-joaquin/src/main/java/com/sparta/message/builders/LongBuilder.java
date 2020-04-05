@@ -2,8 +2,8 @@ package com.sparta.message.builders;
 
 public class LongBuilder extends MessageBuilder<Long>{
 
-	public LongBuilder(byte[] array) {
-		super(array);
+	public LongBuilder(byte[] array, int pointer) {
+		super(array, pointer);
 	}
 
 	@Override
