@@ -125,7 +125,7 @@ public class MainControllerTest {
 		String provider;
 		
 		try {
-			provider = "aaaa";
+			provider = "fakeProvider";
 			result = this.mainController.total(provider);
 		}catch(Exception e) {
   			log.error(e);
