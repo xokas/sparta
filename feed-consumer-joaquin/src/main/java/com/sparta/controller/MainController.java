@@ -39,7 +39,7 @@ public class MainController {
 			LoadBatchBuilder builder = new LoadBatchBuilder(content);
 			List<Record> list = builder.construct();
 			result = this.mainService.store(provider, list);
-		}catch(Throwable e) {
+		}catch(Exception e) {
 			log.error("Error en el servicio load provider ", e);
 		}
 		log.info("Response to {} is {} ", provider, result);

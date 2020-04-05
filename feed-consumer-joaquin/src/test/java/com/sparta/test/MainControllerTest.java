@@ -84,10 +84,10 @@ public class MainControllerTest {
 		int result;
 		String provider;
 		byte[] content;
-		
+		Integer message = Integer.valueOf(5);
 		try {
 			provider = "testProvider";
-			content = provider.getBytes();
+			content = Converters.convertIntToByteArray(message.intValue());
 			result = this.mainController.load(provider, content);
 		}catch(Exception e) {
   			log.error(e);
