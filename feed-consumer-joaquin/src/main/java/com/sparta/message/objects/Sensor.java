@@ -22,5 +22,4 @@ public class Sensor {
 	public void setMeasure(Integer measure) {
 		this.measure = measure;
 	}
-	
 }

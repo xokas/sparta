@@ -78,4 +78,5 @@ public abstract class MessageBuilder<T>{
 		
 		return result;
 	}
+	
 }

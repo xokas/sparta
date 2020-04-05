@@ -19,7 +19,7 @@ import com.sparta.service.MainService;
 @RestController
 public class MainController {
 
-	private static final int REST_ERROR = -1;
+	public static final int REST_ERROR = -1;
 	
 	static Logger log = LogManager.getLogger(MainController.class);
 	
@@ -35,11 +35,13 @@ public class MainController {
 	public int load(@PathVariable("provider") String provider, @RequestBody byte[] content) throws IOException {
 		int result = REST_ERROR;
 		log.info("Request from {}", provider);
-		
-		LoadBatchBuilder builder = new LoadBatchBuilder(content);
-		List<Record> list = builder.construct();
-		result = this.mainService.store(provider, list);
-		
+		try {
+			LoadBatchBuilder builder = new LoadBatchBuilder(content);
+			List<Record> list = builder.construct();
+			result = this.mainService.store(provider, list);
+		}catch(Throwable e) {
+			log.error("Error en el servicio load provider ", e);
+		}
 		log.info("Response to {} is {} ", provider, result);
 		return result;
 	}
@@ -48,9 +50,11 @@ public class MainController {
 	public int total(@PathVariable("provider") String provider) {
 		int result = REST_ERROR;
 		log.info("Request from {}", provider);
-		
-		result = this.mainService.findByProvider(provider);
-		
+		try {
+			result = this.mainService.findByProvider(provider);
+		}catch(Throwable e) {
+			log.error("Error en el servicio total provider ", e);
+		}
 		log.info("Response to {} is {} ", provider, result);
 		return result;
 	}
