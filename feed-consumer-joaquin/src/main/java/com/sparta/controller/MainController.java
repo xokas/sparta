@@ -38,7 +38,7 @@ public class MainController {
 		try {
 			LoadBatchBuilder builder = new LoadBatchBuilder(content);
 			List<Record> list = builder.construct();
-			result = this.mainService.store(provider, list);
+			result = this.mainService.storeDataFromProvider(provider, list);
 		}catch(Exception e) {
 			log.error("Error en el servicio load provider ", e);
 		}
@@ -51,7 +51,7 @@ public class MainController {
 		int result = REST_ERROR;
 		log.info("Request from {}", provider);
 		try {
-			result = this.mainService.findByProvider(provider);
+			result = this.mainService.findTotalRecordsByProvider(provider);
 		}catch(Throwable e) {
 			log.error("Error en el servicio total provider ", e);
 		}

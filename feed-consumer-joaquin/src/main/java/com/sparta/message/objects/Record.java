@@ -11,8 +11,7 @@ public class Record {
 	private List<Sensor> sensors;
 	private Long crc32SensorsData;
 	
-	public Record(Long index, Long timestamp, String city, Integer numberBytesSensorData, List<Sensor> sensors,
-			Long crc32SensorsData) {
+	public Record(Long index, Long timestamp, String city, Integer numberBytesSensorData, List<Sensor> sensors, Long crc32SensorsData) {
 		super();
 		this.index = index;
 		this.timestamp = timestamp;

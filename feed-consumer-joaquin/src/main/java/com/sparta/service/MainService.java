@@ -21,11 +21,15 @@ public class MainService {
     @Qualifier("recordMemRODao")
     private RecordMemRODao recordRODao;
 	
-	public int store(String provider, List<Record> list) {
-		return this.recordDao.save(provider, list);
+	public int storeDataFromProvider(String provider, List<Record> list) {
+		int result = -1;
+		
+		result = this.recordDao.save(provider, list);
+		
+		return result;
 	}
 
-	public int findByProvider(String provider) {
+	public int findTotalRecordsByProvider(String provider) {
 		int result = -1;
 		
 		result = this.recordRODao.getTotalByProvider(provider);
