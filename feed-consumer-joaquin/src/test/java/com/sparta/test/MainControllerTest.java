@@ -3,6 +3,10 @@ package com.sparta.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -15,13 +19,12 @@ import com.sparta.SpartaApplication;
 import com.sparta.controller.MainController;
 import com.sparta.message.builders.LoadBatchBuilder;
 import com.sparta.message.objects.Record;
-import com.sparta.utils.Converters;
 
 //@SpringBootTest
 @SpringBootTest(classes={SpartaApplication.class})
 public class MainControllerTest {
 
-	static Logger log = LogManager.getLogger(MainController.class);
+	private static Logger log = LogManager.getLogger(MainControllerTest.class);
 	
 	@Autowired
 	MainController mainController;
@@ -33,20 +36,23 @@ public class MainControllerTest {
 	
 	@Test
 	void loadBatchBuilderShouldWork() {
-		int total = 1;
-		List<Record> listTestData = null;
-		List<Record> listMessage = null;
+		int totalRecord = 1;
+		int totalSensor = 1;
+		List<Record> listTestData = new ArrayList<>(1);
+		List<Record> listMessage = new ArrayList<>(1);
 		byte[] content;
-		LoadBatchBuilder builder;
-		
+		LoadBatchBuilder batchBuilder;
+		MessageTestDataBuilder dataBuilder;
 		try {
-			listTestData = LoadBatchBuilder.constructTestData(total);
-			content = LoadBatchBuilder.constructMessage(listTestData);
-			builder = new LoadBatchBuilder(content);
-			listMessage = builder.construct();
+			dataBuilder = new MessageTestDataBuilder(totalRecord, totalSensor);
+			listTestData = dataBuilder.construct();
+			content = buildMessage(listTestData);
+			batchBuilder = new LoadBatchBuilder(content);
+			listMessage = batchBuilder.construct();
 		}catch(Exception e) {
-  			log.error(e);
+			log.error(e);
 		}
+		
 		assertNotNull(listTestData);
 		assertNotNull(listMessage);
 		assertEquals(listTestData.get(0).getCity(), listMessage.get(0).getCity(), "city");
@@ -60,23 +66,26 @@ public class MainControllerTest {
 	
 	@Test
 	void loadShouldWork() {
-		int total = 1;
+		int totalRecord = 1;
+		int totalSensor = 1;
 		int result;
 		String provider;
 		List<Record> list;
-		byte[] content;
+		byte[] message;
+		MessageTestDataBuilder builder;
 		
 		try {
 			provider = "testProvider";
-			list = LoadBatchBuilder.constructTestData(total);
-			content = LoadBatchBuilder.constructMessage(list);
-			result = this.mainController.load(provider, content);
+			builder = new MessageTestDataBuilder(totalRecord, totalSensor);
+			list = builder.construct();
+			message = buildMessage(list);
+			result = this.mainController.load(provider, message);
 		}catch(Exception e) {
   			log.error(e);
 			result = -1;
 		}
 		
-		assertEquals(result, total);
+		assertEquals(result, totalRecord);
 	}
 	
 	@Test
@@ -84,14 +93,14 @@ public class MainControllerTest {
 		int result;
 		String provider;
 		byte[] content;
-		Integer message = Integer.valueOf(5);
+		Long message = Long.valueOf(5);
 		try {
 			provider = "testProvider";
-			content = Converters.convertIntToByteArray(message.intValue());
+			content = ByteBuffer.allocate(8).putLong(message.intValue()).array();
 			result = this.mainController.load(provider, content);
 		}catch(Exception e) {
   			log.error(e);
-			result = -1;
+			result = 0;
 		}
 		
 		assertEquals(result, MainController.REST_ERROR);
@@ -99,24 +108,27 @@ public class MainControllerTest {
 	
 	@Test
 	void totalShouldWork() {
-		int total = 1;
+		int totalRecord = 1;
+		int totalSensor = 1;
 		int result;
 		String provider;
 		List<Record> list;
-		byte[] content;
+		byte[] message;
+		MessageTestDataBuilder builder;
 		
 		try {
 			provider = "testProvider";
-			list = LoadBatchBuilder.constructTestData(total);
-			content = LoadBatchBuilder.constructMessage(list);
-			this.mainController.load(provider, content);
+			builder = new MessageTestDataBuilder(totalRecord, totalSensor);
+			list = builder.construct();
+			message = buildMessage(list);
+			this.mainController.load(provider, message);
 			result = this.mainController.total(provider);
 		}catch(Exception e) {
   			log.error(e);
 			result = -1;
 		}
 		
-		assertEquals(result, total);
+		assertEquals(result, totalRecord);
 	}
 	
 	@Test
@@ -135,13 +147,15 @@ public class MainControllerTest {
 		assertEquals(result, MainController.REST_ERROR);
 	}
 	
-	@Test
-	void testWork() {
-		String hola = "hola";
-		String holaArrayConvert = Converters.convertByteArrayToString(hola.getBytes());
+	private static byte[] buildMessage(List<Record> list) throws IOException {
+		ByteArrayOutputStream result = new ByteArrayOutputStream();
+		result.write(ByteBuffer.allocate(8).putLong(Long.valueOf(list.size())).array());
+
+		for(Record obj : list) {
+			result.write(obj.getBytes());
+		}
 		
-		assertEquals(hola, holaArrayConvert);
-		
+		return result.toByteArray();
 	}
 	
 }

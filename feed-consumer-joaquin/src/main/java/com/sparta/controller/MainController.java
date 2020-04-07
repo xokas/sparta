@@ -21,15 +21,15 @@ public class MainController {
 
 	public static final int REST_ERROR = -1;
 	
-	static Logger log = LogManager.getLogger(MainController.class);
+	private static Logger log = LogManager.getLogger(MainController.class);
+	
+	@Autowired
+	private MainService mainService;
 	
 	@RequestMapping("/")
 	public String index() {
 		return "Hola mundo!";
 	}
-	
-	@Autowired
-	private MainService mainService;
 	
 	@PostMapping("/load/{provider}")
 	public int load(@PathVariable("provider") String provider, @RequestBody byte[] content) throws IOException {

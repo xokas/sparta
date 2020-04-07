@@ -1,69 +1,41 @@
 package com.sparta.message.builders;
 
-import java.util.List;
-import java.util.Random;
-
+import java.nio.ByteBuffer;
 import com.sparta.message.objects.Record;
-import com.sparta.message.objects.Sensor;
-import com.sparta.utils.Utils;
+import com.sparta.message.objects.SensorCollection;
 
-public class RecordBuilder extends MessageBuilder<Record>{
+public class RecordBuilder implements MessageBuilder<Record>{
 
-	public RecordBuilder(byte[] array, int pointer) {
-		super(array, pointer);
+	private ByteBuffer buffer;
+	
+	public RecordBuilder(ByteBuffer buffer) {
+		super();
+		this.buffer = buffer;
 	}
 
 	@Override
 	public Record construct() {
 		Long recordIndex;
 		Long timestamp;
+		Integer citySize;
+		byte[] cityByteArray;
 		String city;
 		Integer numberBytesSensorData;
-		List<Sensor> sensorsData;
+		SensorCollection sensorsData;
 		Long crc32SensorsData;
+		SensorCollectionBuilder sensorCollectionBuilder;
 		
-		recordIndex = this.constructLong();
-		timestamp = this.constructLong();
-		city = this.constructString();
-		numberBytesSensorData = this.constructInteger();
-		sensorsData = this.constructSensorData();		
-		crc32SensorsData = this.constructLong();
+		recordIndex = this.buffer.getLong();
+		timestamp = this.buffer.getLong();
+		citySize = this.buffer.getInt();
+		cityByteArray = new byte[citySize];
+		this.buffer.get(cityByteArray);
+		city = new String(cityByteArray);
+		numberBytesSensorData = this.buffer.getInt();
+		sensorCollectionBuilder = new SensorCollectionBuilder(buffer);
+		sensorsData = sensorCollectionBuilder.construct();
+		crc32SensorsData = buffer.getLong();
 		
 		return new Record(recordIndex, timestamp, city, numberBytesSensorData, sensorsData, crc32SensorsData);
-	}
-
-	private List<Sensor> constructSensorData() {
-		List<Sensor> result;
-		
-		SensorCollectionBuilder builder = new SensorCollectionBuilder(this.getArray(), this.getPointer());
-		result =  builder.construct();
-		this.setPointer(builder.getPointer());
-		
-		return result;
-	}
-
-	public static Record constructTestData(Random ran) {
-		Long index = LongBuilder.constructTestData(ran);
-		Long timestamp = LongBuilder.constructTestData(ran);
-		String city = StringBuilder.constructTestData(ran);
-	    List<Sensor> sensors = SensorCollectionBuilder.constructTestData(1, ran);
-	    Integer numberBytesSensorData =  Integer.valueOf(SensorCollectionBuilder.constructMessage(sensors).length);
-	    Long crc32SensorsData = LongBuilder.constructTestData(ran);
-		
-		return new Record(index, timestamp, city, numberBytesSensorData, sensors, crc32SensorsData);
-	}
-
-	public static byte[] constructMessage(Record obj) {
-		byte[] result;
-		
-		result = LongBuilder.constructMessage(obj.getIndex());
-		result = Utils.mergeArrays(result, LongBuilder.constructMessage(obj.getTimestamp()));
-		result = Utils.mergeArrays(result, StringBuilder.constructMessage(obj.getCity()));
-		result = Utils.mergeArrays(result, IntegerBuilder.constructMessage(obj.getNumberBytesSensorData()));
-		result = Utils.mergeArrays(result, SensorCollectionBuilder.constructMessage(obj.getSensors()));
-		result = Utils.mergeArrays(result, LongBuilder.constructMessage(obj.getCrc32SensorsData()));
-		
-		return result;
-	}
-	
+	}	
 }

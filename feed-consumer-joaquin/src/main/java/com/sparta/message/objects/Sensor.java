@@ -1,6 +1,10 @@
 package com.sparta.message.objects;
 
-public class Sensor {
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
+public class Sensor extends MessageObject{
 
 	private String id;
 	private Integer measure;
@@ -9,7 +13,21 @@ public class Sensor {
 		this.id = id;
 		this.measure = measure;
 	}
-	
+	protected byte[] toByteArray() throws IOException {
+		ByteArrayOutputStream result;
+		int resultSize = 0;
+		byte[] idByteArray = this.id.getBytes();
+		byte[] idSizeByteArray = ByteBuffer.allocate(4).putInt(idByteArray.length).array();
+		byte[] measureArray = ByteBuffer.allocate(4).putInt(this.measure).array();
+		
+		resultSize = idSizeByteArray.length + idByteArray.length + measureArray.length;
+		result = new ByteArrayOutputStream(resultSize);
+		result.write(idSizeByteArray);
+		result.write(idByteArray);
+		result.write(measureArray);
+		
+		return result.toByteArray();
+	}
 	public String getId() {
 		return id;
 	}

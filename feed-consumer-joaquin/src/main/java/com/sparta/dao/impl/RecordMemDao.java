@@ -19,7 +19,7 @@ public class RecordMemDao implements RecordDao {
 	public int save(String provider, List<Record> list) {
 		int result = -1;
 		
-		this.database.getRecords().put(provider, list);
+		this.database.getRecords().putIfAbsent(provider, list);
 		result = list.size();
 		
 		return result;

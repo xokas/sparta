@@ -1,64 +1,30 @@
 package com.sparta.message.builders;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
+import java.nio.ByteBuffer;
 import com.sparta.message.objects.Sensor;
-import com.sparta.utils.Converters;
-import com.sparta.utils.Utils;
+import com.sparta.message.objects.SensorCollection;
 
-public class SensorCollectionBuilder extends MessageBuilder<List<Sensor>>{
+public class SensorCollectionBuilder implements MessageBuilder<SensorCollection>{
 
-	public SensorCollectionBuilder(byte[] array, int pointer) {
-		super(array, pointer);	
+	private ByteBuffer buffer;
+	
+	public SensorCollectionBuilder(ByteBuffer buffer) {
+		super();
+		this.buffer = buffer;
 	}
 
 	@Override
-	public List<Sensor> construct() {
-		List<Sensor> result;
+	public SensorCollection construct() {
+		SensorCollection result;
 		Integer numberOfSensors;
 		
-		numberOfSensors = this.constructInteger();
-		result = this.constructListSensor(numberOfSensors);
-		
-		return result;
-	}
-
-	private List<Sensor> constructListSensor(Integer numberOfSensors) {
-		List<Sensor> result = new ArrayList<>(numberOfSensors);
+		numberOfSensors = this.buffer.getInt();
+		result = new SensorCollection(numberOfSensors);
 		for(int i = 0; i < numberOfSensors; i++) {
-			SensorBuilder sensorBuilder = new SensorBuilder(this.getArray(), this.getPointer());
-			Sensor sensor = sensorBuilder.construct();
-			this.setPointer(sensorBuilder.getPointer());
+			SensorBuilder sensorBuilder = new SensorBuilder(buffer);
+			Sensor sensor = sensorBuilder.construct();		 
 			result.add(sensor);
 		}
 		return result;
 	}
-
-	public static List<Sensor> constructTestData(int size, Random ran) {
-		List<Sensor> list = new ArrayList<>(size);
-		
-		for(int i = 0; i < size; i++) {
-			Sensor record = SensorBuilder.constructTestData(ran);
-			list.add(record);
-		}
-		
-		return list;
-	}
-
-	public static byte[] constructMessage(List<Sensor> list) {
-		byte[] result;
-		byte[] sensorsArray;
-		
-		Integer numberOfSensors = list.size();
-		result = Converters.convertIntToByteArray(numberOfSensors);
-		
-		for(Sensor obj : list) {
-			sensorsArray = SensorBuilder.constructMessage(obj);
-			result = Utils.mergeArrays(result, sensorsArray);
-		}
-		
-		return result;
-	}	
 }

@@ -1,42 +1,30 @@
 package com.sparta.message.builders;
 
-import java.util.Random;
-
+import java.nio.ByteBuffer;
 import com.sparta.message.objects.Sensor;
-import com.sparta.utils.Utils;
 
-public class SensorBuilder extends MessageBuilder<Sensor>{
+public class SensorBuilder implements MessageBuilder<Sensor>{
 
-	public SensorBuilder(byte[] array, int pointer) {
-		super(array, pointer);	
+	private ByteBuffer buffer;
+	
+	public SensorBuilder(ByteBuffer buffer) {
+		super();
+		this.buffer = buffer;
 	}
 
 	@Override
 	public Sensor construct() {
 		Integer measure;
 		String id;
-		
-		id = this.constructString();
-		measure = this.constructInteger();
-		
-		return new Sensor(id, measure);
-	}
-
-	public static Sensor constructTestData(Random ran) {
-		String id = StringBuilder.constructTestData(ran);
-		Integer measure = IntegerBuilder.constructTestData(ran);
-		return new Sensor(id, measure);
-	}
-
-	public static byte[] constructMessage(Sensor obj) {
-		byte[] result;
 		byte[] idArray;
-		byte[] measureArray;
+		int idSize;
 		
-		idArray = StringBuilder.constructMessage(obj.getId());
-		measureArray = IntegerBuilder.constructMessage(obj.getMeasure());
-		result = Utils.mergeArrays(idArray, measureArray);
-			
-		return result;
+		idSize = this.buffer.getInt();
+		idArray = new byte[idSize];
+		this.buffer.get(idArray);
+		id = new String(idArray);
+		measure = this.buffer.getInt();
+		
+		return new Sensor(id, measure);
 	}
 }
