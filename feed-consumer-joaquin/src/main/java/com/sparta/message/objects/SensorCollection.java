@@ -21,8 +21,9 @@ public class SensorCollection extends MessageObject{
 		this.total = Integer.sum(this.total, s.getMeasure());
 		this.max = this.max.compareTo(s.getMeasure()) > 0 ? this.max : s.getMeasure();
 		this.min =  this.min.compareTo(s.getMeasure()) < 0 ? this.min : s.getMeasure();
-	}	
-	protected byte[] toByteArray() throws IOException {
+	}
+	@Override
+	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream result;
 		byte[] listSizeArray = ByteBuffer.allocate(4).putInt(this.list.size()).array(); 
 	

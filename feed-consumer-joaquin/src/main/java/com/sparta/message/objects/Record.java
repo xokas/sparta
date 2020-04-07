@@ -22,7 +22,8 @@ public class Record extends MessageObject{
 		this.sensors = sensors;
 		this.crc32SensorsData = crc32SensorsData;
 	}
-	protected byte[] toByteArray() throws IOException {
+	@Override
+	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream result;
 		int resultSize = 0;
 		byte[] indexArray = ByteBuffer.allocate(8).putLong(this.index).array();
@@ -30,7 +31,7 @@ public class Record extends MessageObject{
 		byte[] cityByteArray = this.city.getBytes();
 		byte[] citySizeByteArray = ByteBuffer.allocate(4).putInt(cityByteArray.length).array();
 		byte[] numberBytesSensorDataArray = ByteBuffer.allocate(4).putInt(this.numberBytesSensorData).array();
-		byte[] sensorsArray = this.sensors.toByteArray();
+		byte[] sensorsArray = this.sensors.getBytes();
 		byte[] crc32SensorsDataArray = ByteBuffer.allocate(8).putLong(this.crc32SensorsData).array();
 		
 		resultSize = indexArray.length

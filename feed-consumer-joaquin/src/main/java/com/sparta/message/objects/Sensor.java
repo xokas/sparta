@@ -13,7 +13,8 @@ public class Sensor extends MessageObject{
 		this.id = id;
 		this.measure = measure;
 	}
-	protected byte[] toByteArray() throws IOException {
+	@Override
+	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream result;
 		int resultSize = 0;
 		byte[] idByteArray = this.id.getBytes();
